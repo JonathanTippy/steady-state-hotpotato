@@ -86,7 +86,7 @@ fn build_graph(graph: &mut Graph) {
 
 
 
-        actor_builder.with_name(NAMES[i]).build(move |actor| actor::player::run(actor, rx.clone(), tx.clone())
+        actor_builder.with_name(NAMES[i]).build(move |actor| actor::player::run(actor, rx.clone(), tx.clone(), i==0)
                                     , SoloAct);
 
 
