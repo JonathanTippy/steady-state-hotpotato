@@ -1,12 +1,8 @@
 use steady_state::*;
 use arg::MainArg;
-
+use std::sync::Arc;
 const PLAYER_NAME:&str = "player";
-const NUM_OF_PLAYERS:usize = 4;
-
-const NUMBERS: [i32; 5] = [1, 2, 3, 4, 5];
-
-const NAMES: [&str; 5] = ["player1", "player2", "player3", "player4", "player5"];
+const NUM_OF_PLAYERS:usize = 50;
 
 
 mod arg;
@@ -83,13 +79,8 @@ fn build_graph(graph: &mut Graph) {
         let tx = channels[i].0.clone();
         let rx = channels[(i+1)%NUM_OF_PLAYERS].1.clone();
 
-
-
-
-        actor_builder.with_name(NAMES[i]).build(move |actor| actor::player::run(actor, rx.clone(), tx.clone(), i==0)
+        actor_builder.with_name_and_suffix(PLAYER_NAME, i).build(move |actor| actor::player::run(actor, rx.clone(), tx.clone(), i==0)
                                     , SoloAct);
-
-
 
     }
 
