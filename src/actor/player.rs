@@ -23,13 +23,17 @@ async fn internal_behavior<A: SteadyActor>(mut actor: A
         actor.try_send(&mut tx, potato);
     }
 
+    let lose = format!("{}{}: I lose!", actor.identity().label.name, actor.identity().label.suffix.unwrap_or_default());
 
-    while actor.is_running(|| true) {
+    while actor.is_running(|| {std::thread::sleep(Duration::from_millis(10)); true}) {
         await_for_any!(actor.wait_avail(&mut rx,1), actor.wait_periodic(rate));
 
         if let Some(potato) = actor.try_take(&mut rx) {
             actor.try_send(&mut tx, potato);
         }
+    }
+    if actor.avail_units(&mut rx) > 0 {
+        println!("{}",lose);
     }
     Ok(())
 }
