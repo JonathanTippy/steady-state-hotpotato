@@ -7,6 +7,9 @@ pub(crate) struct MainArg {
     /// Timing control parameter for adjusting system responsiveness.
     /// Lower values increase CPU usage but improve reaction time,
     /// while higher values reduce overhead at the cost of latency.
+    #[arg(short = 'c', long = "cores", default_value = "5")]
+    pub(crate) cores: usize,
+
     #[arg(short = 'r', long = "rate", default_value = "1000")]
     pub(crate) rate_ms: u64,
 
@@ -15,6 +18,7 @@ pub(crate) struct MainArg {
     /// that need predictable completion behavior.
     #[arg(short = 'b', long = "beats", default_value = "60")]
     pub(crate) beats: u64,
+
 }
 
 /// Default implementation provides fallback values for testing and API usage.
@@ -25,6 +29,7 @@ impl Default for MainArg { //#!#//
         MainArg {
             rate_ms: 1000,
             beats: 60,
+            cores: 5
         }
     }
 }

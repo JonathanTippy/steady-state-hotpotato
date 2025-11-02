@@ -31,9 +31,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut graph = GraphBuilder::default()
         // The default and minimum telemetry frame rate is 40ms. It works well for most cases.
         //.with_telemtry_production_rate_ms(200) //You can slow it down with this  //#!#//
-        .build(cli_args);
+        .build(cli_args.clone());
 
-    build_graph(&mut graph);
+    build_graph(&mut graph, cli_args.cores);
 
     // Synchronous startup ensures all actors are ready before proceeding.
     // This prevents race conditions during initialization and provides
@@ -45,7 +45,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     graph.block_until_stopped(Duration::from_secs(4))
 }
 
-fn build_graph(graph: &mut Graph) {
+fn build_graph(graph: &mut Graph, n: usize) {
 
     // Channel builder configuration applies consistent monitoring across all channels.
     // This provides uniform observability and alerting behavior without requiring
@@ -60,7 +60,7 @@ fn build_graph(graph: &mut Graph) {
         .with_filled_percentile(Percentile::p80());
 
     let mut channels:Vec<(LazySteadyTx<Potato>, LazySteadyRx<Potato>)> = vec!();
-    for _ in 0..NUM_OF_PLAYERS {
+    for _ in 0..n {
         channels.push(channel_builder.build());
     }
 
@@ -73,11 +73,11 @@ fn build_graph(graph: &mut Graph) {
         .with_mcpu_avg();//#!#//
 
 
-    for i in 0..NUM_OF_PLAYERS {
+    for i in 0..n {
 
 
         let tx = channels[i].0.clone();
-        let rx = channels[(i+1)%NUM_OF_PLAYERS].1.clone();
+        let rx = channels[(i+1)%n].1.clone();
 
         actor_builder.with_name_and_suffix(PLAYER_NAME, i).build(move |actor| actor::player::run(actor, rx.clone(), tx.clone(), i==0)
                                     , SoloAct);
