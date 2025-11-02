@@ -1,0 +1,20 @@
+[package]
+name = "steady-state-hotpotato"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+#steady_state = "0.2.5"
+steady_state     = { path = "../steady-state-stack/core" } # for testing
+
+
+clap             = { version = "4.5.38", features = ["derive"] }
+
+[features]
+default = []
+
+# Re-export steady_state's features
+exec_async_std = ["steady_state/exec_async_std"]
+telemetry_server_builtin = ["steady_state/telemetry_server_builtin"]
+prometheus_metrics = ["steady_state/prometheus_metrics"]
+core_display = ["steady_state/core_display"]
